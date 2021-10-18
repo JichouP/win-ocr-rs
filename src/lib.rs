@@ -1,10 +1,10 @@
-use bindings::Windows::{
+use std::fs;
+use win_ocr_bindings::Windows::{
     Globalization::Language,
     Graphics::Imaging::{BitmapDecoder, SoftwareBitmap},
     Media::Ocr::OcrEngine,
     Storage::{FileAccessMode, StorageFile},
 };
-use std::fs;
 
 /// Performs OCR on PNG files and returns the result.
 ///
