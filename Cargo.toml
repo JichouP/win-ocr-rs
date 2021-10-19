@@ -5,7 +5,7 @@ edition = "2018"
 license = "MIT"
 name = "win_ocr"
 repository = "https://github.com/JichouP/win-ocr-rs"
-version = "0.1.0"
+version = "0.1.1"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
