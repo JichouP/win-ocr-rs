@@ -5,6 +5,9 @@ use win_ocr_bindings::Windows::{
     Media::Ocr::OcrEngine,
     Storage::{FileAccessMode, StorageFile},
 };
+use windows::HRESULT;
+
+const E_ACCESSDENIED: HRESULT = HRESULT(0x80070005);
 
 /// Performs OCR on PNG files and returns the result.
 ///
@@ -20,10 +23,12 @@ use win_ocr_bindings::Windows::{
 ///
 /// ```
 /// use win_ocr::ocr;
-/// let ocr_result: String = ocr("/path/to/file.png");
+/// let ocr_result = ocr("/path/to/file.png");
 /// ```
 pub fn ocr(path: &str) -> windows::Result<String> {
-    Ok(ocr_from_bitmap(open_image_as_bitmap(path)?)?)
+    let bitmap = open_image_as_bitmap(path)?;
+    let ocr_result = ocr_from_bitmap(bitmap)?;
+    Ok(ocr_result)
 }
 
 /// Performs OCR on PNG files and returns the result.
@@ -39,13 +44,12 @@ pub fn ocr(path: &str) -> windows::Result<String> {
 ///
 /// ```
 /// use win_ocr::ocr_with_lang;
-/// let ocr_result: String = ocr_with_lang("/path/to/file.png", "en");
+/// let ocr_result = ocr_with_lang("/path/to/file.png", "en");
 /// ```
 pub fn ocr_with_lang(path: &str, lang: &str) -> windows::Result<String> {
-    Ok(ocr_from_bitmap_with_lang(
-        open_image_as_bitmap(path)?,
-        lang,
-    )?)
+    let bitmap = open_image_as_bitmap(path)?;
+    let ocr_result = ocr_from_bitmap_with_lang(bitmap, lang)?;
+    Ok(ocr_result)
 }
 
 /// Performs OCR on `SoftwareBitmap` and returns the result.
@@ -86,10 +90,13 @@ pub fn ocr_from_bitmap_with_lang(bitmap: SoftwareBitmap, lang: &str) -> windows:
 
 /// Opens an PNG file as a `SoftwareBitmap`
 pub fn open_image_as_bitmap(path: &str) -> windows::Result<SoftwareBitmap> {
-    let path: String = fs::canonicalize(path)
-        .unwrap()
-        .to_string_lossy()
-        .replace("\\\\?\\", "");
+    let path = fs::canonicalize(path);
+    let path = match path {
+        Ok(path) => path.to_string_lossy().replace("\\\\?\\", ""),
+        Err(_) => {
+            return Err(windows::Error::new(E_ACCESSDENIED, "Could not open file"));
+        }
+    };
 
     let file = StorageFile::GetFileFromPathAsync(path)?.get()?;
 
