@@ -1,4 +1,4 @@
-name: Rust
+name: Build
 
 on:
   push:
@@ -15,9 +15,5 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: Cargo Build
-        run: cargo build --verbose
-      - name: Cargo Fmt
-        run: cargo fmt -- --check
       - name: Cargo clippy
         run: cargo clippy -- -Dwarnings
