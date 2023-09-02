@@ -1,25 +1,19 @@
 [package]
+name = "win_ocr"
 authors = ["JichouP <akkunn100@gmail.com>"]
 description = "A library for Rust to do OCR on Windows"
 edition = "2018"
 license = "MIT"
-name = "win_ocr"
 repository = "https://github.com/JichouP/win-ocr-rs"
 version = "0.1.2"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-win_ocr_bindings = {version = "0.1.0"}
-windows = {version = "0.21.1"}
-
-[build-dependencies]
-windows = {version = "0.21.1"}
-
-[lib]
-name = "win_ocr"
-path = "src/lib.rs"
-
-[[bin]]
-name = "win_ocr"
-path = "src/bin.rs"
+windows = { version = "0.51.1", features = [
+    "Foundation_Collections",
+    "Globalization",
+    "Graphics_Imaging",
+    "Media_Ocr",
+    "Storage_Streams",
+] }
